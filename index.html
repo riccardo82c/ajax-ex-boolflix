@@ -8,24 +8,26 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"></script>
 	<script src="https://momentjs.com/downloads/moment-with-locales.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	<title>Calendar</title>
+	<title>Boolflix</title>
 </head>
 
 <body>
-	<h1>Calendar </h1>
+	<h1>Boolflix</h1>
 
-	<input type="text"> <button>search</button>
+	<input type="text" id="input">
+	<button id="search-btn">search</button>
 
-	<ul></ul>
+	<div id="list"></div>
 
 
 	<!-- handlebars template script -->
 	<script id="entry-template" type="text/x-handlebars-template">
-	  <div class="entry">
-	    
-	    <h3 class="mese">{{meseAnno}}</h3>
-		
-	  </div>
+	  <ul>
+		<li>{{title}}</li>
+		<li>{{original_title}}</li>
+		<li>{{original_language}}</li>
+		<li>{{vote_average}}</li>
+	  </ul>
 	</script>
 
 
