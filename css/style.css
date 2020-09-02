@@ -10,3 +10,17 @@
 	clear: both;
 	display: table;
 } */
+
+body {
+	background-color: #333;
+	color: white;
+}
+
+ul {
+	list-style-type: none;
+	padding: 10px;
+}
+
+.title {
+	font-size: 1.5em;
+}
