@@ -23,23 +23,25 @@
 			<h5>The Movie DB</h5>
 		</div>
 		<div class="search">
-			<input type="text" id="input" placeholder="Insert Title">
+			<input type="text" id="input" placeholder="Inserisci titolo">
 			<button id="search-btn"><i class="fas fa-search"></i></button>
 		</div>
 	</header>
 
 	<section class="collection">
-		<div id="list"></div>
+		<div id="list">
+			<!-- <div id="movie-list"></div>
+			<div id="tv-list"></div> -->
+		</div>
 	</section>
 
 
 	<!-- handlebars template script -->
 	<script id="entry-template" type="text/x-handlebars-template">
-	  <ul>
+	  <ul class="item">
 		<li class="title">Titolo: {{title}}</li>
 		<li class="original-title">Titolo Originale: {{original_title}}</li>
 		<li class="original-language">Lingua Originale: 
-
 			<img src="{{{original_language}}}" alt="{{{original_language}}}">
 		</li>
 		<li class="vote-average-container">
