@@ -5,6 +5,10 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" />
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,100&display=swap"
+		rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"></script>
 	<script src="https://momentjs.com/downloads/moment-with-locales.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -12,12 +16,21 @@
 </head>
 
 <body>
-	<h1>Boolflix</h1>
 
-	<input type="text" id="input">
-	<button id="search-btn">search</button>
+	<header>
+		<div class="logo">
+			<h1>Boolflix</h1>
+			<h5>The Movie DB</h5>
+		</div>
+		<div class="search">
+			<input type="text" id="input" placeholder="Insert Title">
+			<button id="search-btn"><i class="fas fa-search"></i></button>
+		</div>
+	</header>
 
-	<div id="list"></div>
+	<section class="collection">
+		<div id="list"></div>
+	</section>
 
 
 	<!-- handlebars template script -->
@@ -25,8 +38,14 @@
 	  <ul>
 		<li class="title">Titolo: {{title}}</li>
 		<li class="original-title">Titolo Originale: {{original_title}}</li>
-		<li class="original-language">Lingua Originale: {{original_language}}</li>
-		<li class="vote-average">Voto Medio: {{vote_average}}</li>
+		<li class="original-language">Lingua Originale: 
+
+			<img src="{{{original_language}}}" alt="{{{original_language}}}">
+		</li>
+		<li class="vote-average-container">
+			<div class="vote-average" data-id="{{id}}">{{{vote_average}}}</div>
+		</li>
+		<li class="type"> </li>
 	  </ul>
 	</script>
 
