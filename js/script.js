@@ -43,7 +43,8 @@ $(function () {
 		// salvo in una variabile il campo preso da #input e resetto
 		let query = saveAndReset();
 		// chiamata AJAX
-		ajaxCall(query);
+		ajaxCall(query, 'movie');
+		ajaxCall(query, 'tv');
 	}
 
 
@@ -52,15 +53,14 @@ $(function () {
 		$('#list').empty();
 		let value = $("#input").val();
 		$("#input").val('');
-
 		return value
 	}
 
 	// chiamata AJAX principale per ritornare i valori di ogni item
-	function ajaxCall(str) {
+	function ajaxCall(str, type) {
 		$.ajax({
 			method: 'GET',
-			url: 'https://api.themoviedb.org/3/search/movie',
+			url: `https://api.themoviedb.org/3/search/${type}`,
 			data: {
 				api_key: '5735ba8aa714f2161c6a9f7f267223ef',
 				language: 'it-IT',
@@ -69,36 +69,49 @@ $(function () {
 			success: function (obj) {
 				// se ci sono risultati
 				if (obj.total_results > 0) {
-					printCollection(obj);
+					printCollection(obj, type);
+
 				} else {
 					/* posso sennò aggiungere una funzione no result */
 					// se nn ci sono titoli 
-					$('#list').append('Il titolo ricercato non esiste');
+					$('#list').append(`<p>Il titolo ricercato non esiste in ${type}</p>`);
 					$('#input').attr('placeholder', 'Sorry, no result');
+
 				}
 			},
 			error: function () {
 				alert('Errore');
-
 			}
 		});
-
 	}
 
 
 	// inserisco i movie nel DOM
-	function printCollection(data) {
+	function printCollection(data, type) {
 		/* tutto questo posso metterlo in una funzione esterna */
 		// template HB
 		var source = $("#entry-template").html();
 		var template = Handlebars.compile(source);
 		for (let i = 0; i < data.results.length; i++) {
 
+			let titolo, titoloOriginale;
+
+			if (type == 'movie') {
+				titolo = 'title';
+				titoloOriginale = 'original_title';
+			} else if (type == 'tv') {
+				titolo = 'name';
+				titoloOriginale = 'original_name';
+			} else {
+				alert('errore scelta tipo');
+			}
+
 			let hbObj = {
-				title: data.results[i].title,
-				original_title: data.results[i].original_title,
+				title: data.results[i][titolo],
+				original_title: data.results[i][titoloOriginale],
 				original_language: langFlags(data.results[i].original_language),
-				vote_average: star(data.results[i].vote_average)
+				vote_average: star(data.results[i].vote_average),
+				tipo: type
 			}
 
 			var html = template(hbObj);
@@ -118,38 +131,34 @@ $(function () {
 		return result;
 	}
 
-	// funzione per trasformare un numero da 1 - 10 a 1 - 5 stelle
-	function toStar(int) {
-		return Math.round(int / 2);
-	}
-
-	// funzione per stampare le stelline corrispondenti
-	function printStar(int, location) {
-		const starFull = '<i class="fas fa-star"></i>';
-		const starEmpty = '<i class="far fa-star"></i>';
-		let result = starFull.repeat(int) + starEmpty.repeat(5 - int)
-		location.append(result);
-	}
-
 	// funzione che ritorna l'immagine se presente sennò ritorna la stringa iniziale
 	function langFlags(str) {
-		switch (str) {
-			case 'en':
-				return ('img/en.png');
-			case 'it':
-				return ('img/it.png');
-			case 'fr':
-				return ('img/fr.png');
-			case 'de':
-				return ('img/de.png');
-			case 'es':
-				return ('img/es.png');
-			case 'ja':
-				return ('img/ja.png');
-			default:
-				return str
+		// se la stringa è presente restituisco l'immagine sennò la stringa stessa
+		if (str === 'en' || str === 'it' || str === 'fr' || str === 'de' || str === 'es' || str === 'ja') {
+			return `img/${str}.png`;
+		} else {
+			return str
 		}
 	}
-
-
 });
+
+
+/* 
+switch (str) {
+
+
+	case 'en':
+		return ('img/en.png');
+	case 'it':
+		return ('img/it.png');
+	case 'fr':
+		return ('img/fr.png');
+	case 'de':
+		return ('img/de.png');
+	case 'es':
+		return ('img/es.png');
+	case 'ja':
+		return ('img/ja.png');
+	default:
+		return str
+} */
