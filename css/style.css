@@ -14,12 +14,23 @@ body {
 header {
 	height: 75px;
 	width: 100%;
-	display: flex;
-	justify-content: space-evenly;
-	align-items: center;
+	position: fixed;
+	top: 0;
+	left: 0;
+
 	background: rgb(44, 62, 153);
 	background: radial-gradient(circle, rgb(54, 94, 119) 0%, rgb(0, 0, 0) 100%);
 	border-bottom: 1px solid #2470a0;
+}
+
+.container {
+	width: 80%;
+	max-width: 1200px;
+	margin: 0 auto;
+
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .logo {
@@ -50,7 +61,7 @@ input#input {
 	padding: 5px 10px;
 	color: white;
 	background-color: #141414;
-	border-radius: 8px;
+	/* border-radius: 8px; */
 	outline: none;
 	border: none;
 	box-shadow: 1px 1px 1px #a4c1d3;
@@ -91,32 +102,73 @@ button i {
 /* list section */
 
 #list {
+	margin-top: 75px;
+	padding: 0 25px;
 	height: calc(100vh - 95px);
-	padding: 10px;
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-	gap: 10px;
 }
 
-/* #movie-list,
+#movie-list,
 #tv-list {
 	height: 50%;
 	display: flex;
 	flex-flow: row;
 	flex-wrap: no-wrap;
-} */
+	align-items: center;
+}
 
 ul.item {
-	list-style-type: none;
+	height: 280px;
 	padding: 10px;
+	flex: 0 0 260px;
+	margin: 0 5px;
+	list-style-type: none;
+	border: 1px solid #2470a085;
+	/* background-color: rgba(0, 0, 0, 0.116); */
 
-	height: 350px;
-	background-color: black;
 
-	/* border: 1px solid #2470a0; */
-	box-shadow: 1px 1px 2px #a4c1d3;
-	border-radius: 10px;
+	box-shadow: 0 1px 1px rgba(36, 112, 160, 0.12),
+		0 2px 2px rgba(36, 112, 160, 0.12),
+		0 4px 4px rgba(36, 112, 160, 0.12),
+		0 8px 8px rgba(36, 112, 160, 0.12),
+		0 16px 16px rgba(36, 112, 160, 0.12);
+	/* box-shadow: 1px 1px 2px #a4c1d3; */
+	/*  */
+	position: relative;
+	transition: all .5s ease;
+}
 
+
+.item:hover .poster {
+	opacity: 0;
+}
+
+
+
+
+.poster {
+	opacity: 1;
+	height: 280px;
+	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+
+
+	transition: all .3s ease;
+
+	/* background-color: red; */
+}
+
+.poster img {
+	width: 100%;
+	height: 100%;
+}
+
+.poster .poster-type {
+	text-align: center;
+	font-weight: bold;
+	color: #2470a0;
+	text-shadow: 2px 2px 1px black;
 }
 
 
@@ -130,6 +182,40 @@ ul.item {
 
 .vote-average i {
 	color: #2470a0;
-
-
 }
+
+
+
+/* PROVE HOVER */
+
+/* TV LIST */
+/* 
+#tv-list:hover .item,
+#movie-list:hover .item {
+	transform: translateX(-10%);
+}
+
+#tv-list .item:hover~.item,
+#movie-list .item:hover~.item {
+	transform: translateX(10%);
+}
+
+#tv-list .item:hover,
+#movie-list .item:hover {
+	transform: scale(1.1);
+	z-index: 1;
+} */
+
+/* MOVIE LIST */
+
+#movie-list:hover .item,
+#tv-list:hover .item {
+	transform: scale(.9);
+}
+
+#movie-list .item:hover,
+#tv-list .item:hover {
+	transform: scale(1);
+}
+
+/* FINE PROVE HOVER */

@@ -18,36 +18,49 @@
 <body>
 
 	<header>
-		<div class="logo">
-			<h1>Boolflix</h1>
-			<h5>The Movie DB</h5>
-		</div>
-		<div class="search">
-			<input type="text" id="input" placeholder="Inserisci titolo">
-			<button id="search-btn"><i class="fas fa-search"></i></button>
+		<div class="container">
+			<div class="logo">
+				<h1>Boolflix</h1>
+				<h5>The Movie DB</h5>
+			</div>
+			<div class="search">
+				<input type="text" id="input" placeholder="Inserisci titolo">
+				<button id="search-btn"><i class="fas fa-search"></i></button>
+			</div>
 		</div>
 	</header>
 
 	<section class="collection">
 		<div id="list">
-			<!-- <div id="movie-list"></div>
-			<div id="tv-list"></div> -->
+
+			<div id="movie-list">
+
+			</div>
+
+			<div id="tv-list">
+
+			</div>
 		</div>
 	</section>
 
 
 	<!-- handlebars template script -->
 	<script id="entry-template" type="text/x-handlebars-template">
-	  <ul class="item">
+	  <ul class="item" data-id="{{idMovie}}">
+		<div class="poster">
+			<img src="{{{poster}}}" alt="poster image">
+			<div class="poster-type">{{tipo}}</div>
+		</div>
 		<li class="title">Titolo: {{title}}</li>
 		<li class="original-title">Titolo Originale: {{original_title}}</li>
-		<li class="original-language">Lingua Originale: 
-			<img src="{{{original_language}}}" alt="{{{original_language}}}">
+		<li class="original-language">Lingua Originale: {{{original_language}}}
 		</li>
 		<li class="vote-average-container">
 			<div class="vote-average" data-id="{{id}}">{{{vote_average}}}</div>
 		</li>
-			<li class="type">Tipo: {{tipo}} </li>
+		<li class="genere">Genere: </li>
+		<li class="overview">{{overview}}</li>
+		<!-- <li class="type">Tipo: {{tipo}} </li> -->
 	</ul>
 </script>
 
