@@ -21,7 +21,20 @@ Milestone 2:
  */
 
 
+
+
+
 $(function () {
+
+	/* MOUSE WHEEL SCROLL */
+	const movie = document.getElementById('movie-list');
+	const tv = document.getElementById('tv-list');
+
+	scroll(movie);
+	scroll(tv);
+	/* END MOUSE WHEEL SCROLL */
+
+	$('#input').focus();
 
 	$('#input').keydown(function (e) {
 		if (e.which == 13 && e.keyCode == 13 && $('#input').val()) {
@@ -39,15 +52,15 @@ $(function () {
 });
 
 
-
+/* ******** */
 /* FUNZIONI */
+/* ******** */
+
 // chiamata AJAX per restituire la stringa
 function findCollection() {
-	// setto a vuoto il placeholder prima della query ajax
-	/* $('#input').attr('placeholder', ''); */
-	// salvo in una variabile il campo preso da #input e resetto
+	// salvo in una variabile il campo preso da #input
 	let query = saveAndReset();
-	// chiamata AJAX
+	// chiamate AJAX
 	ajaxCall(query, 'movie');
 	ajaxCall(query, 'tv');
 }
@@ -75,16 +88,11 @@ function ajaxCall(str, type) {
 		success: function (obj) {
 			// se ci sono risultati
 			if (obj.total_results > 0) {
+				// stampo la collezione a video in base al tipo
 				printCollection(obj, type);
-
 			} else {
-
 				noResult(type);
 			}
-
-
-			// ricerca genere film
-
 		},
 		error: function () {
 			alert('Errore');
@@ -93,9 +101,8 @@ function ajaxCall(str, type) {
 }
 
 
-// inserisco i movie nel DOM
+// stampa collezione in base alla query inserita in input
 function printCollection(data, type) {
-	/* tutto questo posso metterlo in una funzione esterna */
 	// template HB
 	var source = $("#entry-template").html();
 	var template = Handlebars.compile(source);
@@ -103,31 +110,31 @@ function printCollection(data, type) {
 		let thisItem = data.results[i];
 		let location;
 		type == 'movie' ? location = $('#movie-list') : location = $('#tv-list')
-
 		let hbObj = {
-
 			// id per definire un data id dell'elemento corrente
 			idMovie: thisItem.id,
-
 			title: thisItem.title || thisItem.name,
 			original_title: thisItem.original_title || thisItem.original_name,
 			original_language: langFlags(thisItem.original_language),
 			vote_average: star(thisItem.vote_average),
 			tipo: checkType(type),
 			poster: checkImage(thisItem.poster_path),
-			overview: thisItem.overview.substring(0, 100) + '...',
+			overview: thisItem.overview.substring(0, 250) + '...',
 		}
-
-		console.log(thisItem.id);
-
 		var html = template(hbObj);
 		location.append(html);
 
-		// check del genere
-		// NO RETURN FUNCTION
-		ajaxGenre(type, thisItem.genre_ids[0], thisItem.id);
+		/* Chiamata AJAX per ricercare i generi del film corrente */
+		// check del genere -  NO RETURN FUNCTION (AJAX call)
+		// cerco per genere passando: 1 il tipo (differenzio url in cui cercare), 2 l'id del genere (posso averne più di uno), e l'id dell'elemento corrente per appendere il valore nella posizione corretta)
+		let idGeneri = thisItem.genre_ids;
+		idGeneri.forEach(element => {
+			ajaxGenre(type, element, thisItem.id);
+		});
 
-
+		/* Chiamata AJAX per ricercare gli attori del film corrente*/
+		let idItem = thisItem.id;
+		ajaxAttori(idItem, type);
 
 		// setto il placeholder
 		$('#input').attr('placeholder', 'Inserisci titolo');
@@ -136,11 +143,14 @@ function printCollection(data, type) {
 
 // funzione per convertire il numero in stelle
 function star(int) {
-	int = Math.round(int / 2);
-	const starFull = '<i class="fas fa-star"></i>';
-	const starEmpty = '<i class="far fa-star"></i>';
-	let result = starFull.repeat(int) + starEmpty.repeat(5 - int);
-	return result;
+	const sF = '<i class="fas fa-star"></i>';
+	const sE = '<i class="far fa-star"></i>';
+	const sH = '<i class="fas fa-star-half-alt"></i>'
+	// parte decimale
+	let half = int % 1;
+	// numero di stelle piene
+	let round = Math.floor(int / 2);
+	return half >= .5 ? sF.repeat(round) + sH + sE.repeat(4 - (round)) : sF.repeat(round) + sE.repeat(5 - round)
 }
 
 // funzione che ritorna l'immagine se presente sennò ritorna la stringa iniziale
@@ -154,13 +164,12 @@ function langFlags(lingua) {
 	}
 }
 
-// verifico se esiste qualche item
+// verifico se esiste qualche item del tipo selezioneto... lo stamo nel container del tipo
 function noResult(tipo) {
 	let location;
 	tipo == 'movie' ? location = $('#movie-list') : location = $('#tv-list')
 	console.log('niente da visualizzare');
-	location.append(`<p>Il titolo ricercato non esiste in ${tipo} </p>`);
-	/* $('#input').attr('placeholder', `No ${tipo} result`); */
+	location.append(`<p class='no-search'>Il titolo non è presente in ${checkType(tipo)} </p>`);
 }
 
 // check se presente l'immagine nel db
@@ -169,12 +178,12 @@ function checkImage(path) {
 	return path == null ? defaultImg : `https://image.tmdb.org/t/p/w342${path}`
 }
 
-// check tipe
+// transformo la stringa del genre 
 function checkType(genre) {
 	return genre == 'movie' ? 'Film' : 'Serie TV'
 }
 
-// matchin del genere del film con l'array dei generi
+// matching del genere del film con l'array dei generi
 function ajaxGenre(type, int, idMovie) {
 	$.ajax({
 		method: 'GET',
@@ -184,18 +193,17 @@ function ajaxGenre(type, int, idMovie) {
 			language: 'it-IT'
 		},
 		success: function (obj) {
-			/* console.log(checkArray(obj.genres, int)); */
-			console.log($(`.item[data-id="${idMovie}"`));
-
-			/* $(`.genere[data-id="${idMovie}"`).append(checkArray(obj.genres, int)); */
-			$(`.item[data-id="${idMovie}"`).find('.genere').append(checkArray(obj.genres, int));
+			// appendo la stringa corrispondente al genere nell'item con data-id = "id movie corrente"
+			$(`.item[data-id="${idMovie}"`).find('.genere').append(`${checkArray(obj.genres, int)} `);
 		},
 		error: function () {
-			alert('Errore');
+			console.log('non presente id ' + idMovie);
+			$(`.item[data-id="${idMovie}"`).find('.genere').append(`...`);
 		}
 	});
 }
 
+// passo u intero all'array dei generi e restituisco le stringhe corrispondenti
 function checkArray(arr, int) {
 	for (let i = 0; i < arr.length; i++) {
 		if (arr[i].id == int) {
@@ -204,9 +212,90 @@ function checkArray(arr, int) {
 	}
 }
 
+// chiamata ajax per la ricerca attori
+function ajaxAttori(id, tipo) {
+	$.ajax({
+		method: 'GET',
+		url: `https://api.themoviedb.org/3/${tipo}/${id}/credits`,
+		data: {
+			api_key: '5735ba8aa714f2161c6a9f7f267223ef'
+		},
+		success: function (obj) {
+			findNameCast(obj.cast, id);
+		},
+		error: function () {
+			console.log('non presente id ' + id);
+			$(`.item[data-id="${id}"`).find('.attori').append(`...`);
+		}
+	});
+}
+
+
+// matchin del'id con in nome attore
+function findNameCast(arr, id) {
+
+	if (arr.length > 0) {
+		for (let i = 0; i < 3; i++) {
+			if (arr[i] != undefined) {
+				$(`.item[data-id="${id}"`).find('.attori').append(`${arr[i].name} `);
+			} else {
+				return
+			}
+		}
+	} else {
+		$(`.item[data-id="${id}"`).find('.attori').append(`...`);
+	}
+}
 
 
 
+/* *********************** */
+/* SCROLL WITH MOUSE-WHEEL */
+/* *********************** */
+function scroll(section) {
+	(function () {
+		function scrollHorizontally(e) {
+			e = window.event || e;
+			var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+			section.scrollLeft -= (delta * 300);
+			e.preventDefault();
+		}
+		if (section.addEventListener) {
+			// IE9, Chrome, Safari, Opera
+			section.addEventListener('mousewheel', scrollHorizontally, false);
+			// Firefox
+			section.addEventListener('DOMMouseScroll', scrollHorizontally, false);
+		} else {
+			// IE 6/7/8
+			section.attachEvent('onmousewheel', scrollHorizontally);
+		}
+	})();
+}
+/* *********************** */
+/* *********************** */
+
+
+
+/* *********************** */
+/* chiamata per ricerca attori */
+/* *********************** */
+
+/*  */
+// 1. dopo aver ricercato un film 
+// 2. ne estrapolo results.id per avere l'id del film
+// 3. nel database credits passando l id del film estraggo tutti i suoi attori (già ordinati all'interno per ordine di importanza)
+// 4. acquisisco i primi 5 attori del film con  cast[0].name cast[1].name ... fino a quella che mi serve
+
+
+
+
+/* https://api.themoviedb.org/3/search/movie?api_key=5735ba8aa714f2161c6a9f7f267223ef&language=it-IT&query=matrix */
+
+/* https://api.themoviedb.org/3/movie/603/credits?api_key=5735ba8aa714f2161c6a9f7f267223ef
+
+
+	603 -> id del film matrix
+*/
 
 /* const credit = {
 	"id": 24428,

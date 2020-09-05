@@ -17,11 +17,12 @@
 
 <body>
 
+	<!-- logo + search -->
 	<header>
 		<div class="container">
 			<div class="logo">
 				<h1>Boolflix</h1>
-				<h5>The Movie DB</h5>
+				<h5>MouseWheel Scroll Movie</h5>
 			</div>
 			<div class="search">
 				<input type="text" id="input" placeholder="Inserisci titolo">
@@ -30,15 +31,12 @@
 		</div>
 	</header>
 
+	<!-- container x lista movie -->
 	<section class="collection">
 		<div id="list">
-
 			<div id="movie-list">
-
 			</div>
-
 			<div id="tv-list">
-
 			</div>
 		</div>
 	</section>
@@ -51,23 +49,19 @@
 			<img src="{{{poster}}}" alt="poster image">
 			<div class="poster-type">{{tipo}}</div>
 		</div>
-		<li class="title">Titolo: {{title}}</li>
-		<li class="original-title">Titolo Originale: {{original_title}}</li>
-		<li class="original-language">Lingua Originale: {{{original_language}}}
+		<li class="title"><h2>{{title}}</h2></li>
+		<li class="original-title"><span>Titolo Originale: </span>{{original_title}}</li>
+		<li class="original-language"><span>Lingua Originale: </span>{{{original_language}}}
 		</li>
-		<li class="vote-average-container">
-			<div class="vote-average" data-id="{{id}}">{{{vote_average}}}</div>
-		</li>
-		<li class="genere">Genere: </li>
-		<li class="overview">{{overview}}</li>
-		<!-- <li class="type">Tipo: {{tipo}} </li> -->
+		<li class="vote-average"><span  data-id="{{id}}">Voto Medio: </span>{{{vote_average}}}</li>
+		<li class="genere"><span>Genere: </span></li>
+		<li class='attori'><span>Attori: </span></li>
+		<li class="overview"><p>{{overview}}</p></li>
 	</ul>
 </script>
 
-
-
-
 	<script src="js/script.js" charset="utf-8"></script>
+
 </body>
 
 </html>
