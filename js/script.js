@@ -1,32 +1,7 @@
 /* 
-Milestone 1:
-	Creare un layout base con una searchbar(una input e un button) in cui possiamo scrivere completamente o parzialmente il nome di un film.
-	Possiamo, cliccando il bottone, cercare sull’ API tutti i film che contengono ciò che ha scritto l’ utente.
-	Vogliamo dopo la risposta dell’ API visualizzare a schermo i seguenti valori per ogni film trovato:
-	Titolo
-	Titolo Originale
-	Lingua
-	Voto
-
-Milestone 2:
-	Trasformiamo il voto da 1 a 10 decimale in un numero intero da 1 a 5, così da permetterci di stampare a schermo un numero di stelle piene che vanno da 1 a 5, lasciando le restanti vuote(troviamo le icone in FontAwesome).
-	Arrotondiamo sempre per eccesso all’ unità successiva, non gestiamo icone mezze piene(o mezze vuote: P)
-	Trasformiamo poi la stringa statica della lingua in una vera e propria bandiera della nazione corrispondente, gestendo il caso in cui non abbiamo la bandiera della nazione ritornata dall’ API(le flag non ci sono in FontAwesome).
-	Allarghiamo poi la ricerca anche alle serie tv.Con la stessa azione di ricerca dovremo prendere sia i film che corrispondono alla query, sia le serie tv, stando attenti ad avere alla fine dei valori simili(le serie e i film hanno campi nel JSON di risposta diversi, simili ma non sempre identici)
-	Qui un esempio di chiamata per le serie tv:
-	https: //api.themoviedb.org/3/search/tv?api_key=e99307154c6dfb0b4750f6603256716d&language=it_IT&query=scrubs
-
-	Milestone 3:
-	aggiungere immagini https: //image.tmdb.org/t/p/w342
-
-
-
 	TO DO: 
-	overflow hidden dell'overview ?
-	css per i tasti di scorrimento 
-	scorrimento con la rotella settare dinamicamente la larghezza di ogni immagine
 	
-	filtro per genere a posteriori su HTML
+	1. Filtro per genere a posteriori su HTML
 	
  */
 
@@ -36,7 +11,6 @@ $(function () {
 	// [0] per utilizzare attachEvent per forza ad un elemento JS (non JQUERY)
 	const movie = $('#movie-list')[0];
 	const tv = $('#tv-list')[0];
-
 	scroll(movie);
 	scroll(tv);
 	/* END MOUSE WHEEL SCROLL */
@@ -44,21 +18,55 @@ $(function () {
 	// focus sull'input
 	$('#input').focus();
 
+
 	// attivazione input con INVIO o CLICK SU ICONA
 	$('#input').keydown(function (e) {
 		if (e.which == 13 && e.keyCode == 13 && $('#input').val()) {
+			// se premo invio fermo l'auto scroll
+			clearInterval((stop1 || stop2));
+
 			findCollection();
 		}
 	});
 	$("#search-btn").click(function () {
 		if ($('#input').val()) {
+			// se premo invio fermo l'auto scroll
+			clearInterval((stop1 || stop2));
+
 			findCollection();
 			$('#input').focus();
 		}
 	});
 
 	// bottoni per lo scroll
-	$('#list').on('click', '.scroll', scrollButtonMovie)
+	$('#list').on('click', '.scroll', scrollButtonMovie);
+
+	// 	acquisizione e popolazione DOM ultime uscite movie
+	ajaxUpcomingMovie('movie');
+	// creo pulsanti scroll orizzontale
+	createScrollButtons('movie');
+
+
+
+	/* FUNZIONE CHE FA AUTOSCROLL */
+	stop1 = setInterval(() => {
+		$('#movie-list')[0].scrollLeft += (270);
+	}, 5000);
+
+
+	setTimeout(() => {
+		clearInterval(stop);
+		stop2 = setInterval(() => {
+			$('#movie-list')[0].scrollLeft -= (270);
+		}, 5000);
+	}, 80000);
+	/* END AUTOSCROLL */
+
+	/* 
+			console.log($('#movie-list').scrollLeft());
+			console.log($('#movie-list')[0].offsetWidth);
+			$('#movie-list')[0].scrollLeft -= (270); */
+
 });
 
 
@@ -84,6 +92,38 @@ function saveAndReset() {
 	let value = $("#input").val();
 	$("#input").val('');
 	return value
+}
+
+// chiamata AJAX novità film
+function ajaxUpcomingMovie(type) {
+
+
+	// TESTO ULTIME USCITE
+
+	$('#tv-list').append(`<h2 class='upcoming'>I titoli del momento</h2>`);
+
+
+	$.ajax({
+		method: 'GET',
+		url: `https://api.themoviedb.org/3/${type}/upcoming`,
+		data: {
+			api_key: '5735ba8aa714f2161c6a9f7f267223ef',
+			language: 'it-IT'
+
+		},
+		success: function (obj) {
+			// se ci sono risultati
+			if (obj.total_results > 0) {
+				// stampo la collezione a video in base al tipo
+				printCollection(obj, type);
+			} else {
+				noResult(type);
+			}
+		},
+		error: function () {
+			alert('Errore');
+		}
+	});
 }
 
 // chiamata AJAX principale per ritornare i valori di ogni item
@@ -261,27 +301,27 @@ function findNameCast(arr, id) {
 /* *********************** */
 /* SCROLL WITH MOUSE-WHEEL */
 /* *********************** */
+
 function scroll(section) {
-	(function () {
-		function scrollHorizontally(e) {
-			e = window.event || e;
-			var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-			// larghezza width = 260px + 10 padding
-			const width = 270;
-			section.scrollLeft -= (delta * width);
-			e.preventDefault();
-		}
-		if (section.addEventListener) {
-			// IE9, Chrome, Safari, Opera
-			section.addEventListener('mousewheel', scrollHorizontally, false);
-			// Firefox
-			section.addEventListener('DOMMouseScroll', scrollHorizontally, false);
-		} else {
-			// IE 6/7/8
-			section.attachEvent('onmousewheel', scrollHorizontally);
-		}
-	})();
-}
+	function scrollHorizontally(e) {
+		e = window.event || e;
+		var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+		// larghezza width = 260px + 10 padding
+		const width = 270;
+		section.scrollLeft -= (delta * width);
+		e.preventDefault();
+	}
+	if (section.addEventListener) {
+		// IE9, Chrome, Safari, Opera
+		section.addEventListener('mousewheel', scrollHorizontally, false);
+		// Firefox
+		section.addEventListener('DOMMouseScroll', scrollHorizontally, false);
+	} else {
+		// IE 6/7/8
+		section.attachEvent('onmousewheel', scrollHorizontally);
+	}
+};
+
 /* *********************** */
 /* *********************** */
 /* CREAZIONE pulsanti scroll */
@@ -298,10 +338,10 @@ function createScrollButtons(section) {
 
 /* FUNZIONE pulsanti scroll */
 function scrollButtonMovie() {
-	let width = $(this).parent().width();
+	let parentWidth = $(this).parent().width();
 	if (this.className == 'scroll-left scroll') {
-		$(this).parent()[0].scrollLeft -= (width);
+		$(this).parent()[0].scrollLeft -= (parentWidth);
 	} else {
-		$(this).parent()[0].scrollLeft += (width);
+		$(this).parent()[0].scrollLeft += (parentWidth);
 	}
 }

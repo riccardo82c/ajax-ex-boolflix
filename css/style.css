@@ -109,6 +109,17 @@ button:hover i {
 	transform: scale(1.2);
 }
 
+/* UPCOMING SECTION */
+
+h2.upcoming {
+	position: fixed;
+	left: 50%;
+	transform: translateX(-50%);
+
+	font-size: 3em;
+}
+
+
 /* LIST SECTION */
 
 /* container */
