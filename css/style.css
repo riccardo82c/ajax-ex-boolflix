@@ -50,7 +50,7 @@ header .logo {
 	font-size: 2.8em;
 	letter-spacing: .2em;
 	color: #2470a0;
-	text-shadow: 2px 2px 1px black;
+	text-shadow: 2px 2px 1px rgb(236, 236, 236);
 
 }
 
@@ -80,12 +80,12 @@ header .logo {
 
 }
 
-.search input#input:focus~button {
+.search input#input:focus~#search-btn {
 	color: rgb(236, 236, 236);
 }
 
 
-.search button {
+.search #search-btn {
 	background-color: transparent;
 	border: none;
 	outline: none;
@@ -95,17 +95,20 @@ header .logo {
 	transition: all .2s ease;
 }
 
-.search button:hover {
+.search #search-btn:hover {
 	color: rgb(236, 236, 236);
 }
 
 /* icona lente in search */
-button i {
+#search-btn i {
 	font-size: 0.9em;
 	transition: transform .2s ease;
+	position: absolute;
+	top: 6px;
+	right: 10px;
 }
 
-button:hover i {
+#search-btn:hover i {
 	transform: scale(1.2);
 }
 

@@ -23,15 +23,15 @@ $(function () {
 	$('#input').keydown(function (e) {
 		if (e.which == 13 && e.keyCode == 13 && $('#input').val()) {
 			// se premo invio fermo l'auto scroll
-			clearInterval((stop1 || stop2));
+			clearInterval((stopScroll1));
 
 			findCollection();
 		}
 	});
 	$("#search-btn").click(function () {
 		if ($('#input').val()) {
-			// se premo invio fermo l'auto scroll
-			clearInterval((stop1 || stop2));
+			// se premo search fermo l'auto scroll
+			clearInterval((stopScroll1));
 
 			findCollection();
 			$('#input').focus();
@@ -49,17 +49,10 @@ $(function () {
 
 
 	/* FUNZIONE CHE FA AUTOSCROLL */
-	stop1 = setInterval(() => {
+	stopScroll1 = setInterval(() => {
 		$('#movie-list')[0].scrollLeft += (270);
+		console.log('autoscroll R');
 	}, 5000);
-
-
-	setTimeout(() => {
-		clearInterval(stop);
-		stop2 = setInterval(() => {
-			$('#movie-list')[0].scrollLeft -= (270);
-		}, 5000);
-	}, 80000);
 	/* END AUTOSCROLL */
 
 	/* 
@@ -338,6 +331,8 @@ function createScrollButtons(section) {
 
 /* FUNZIONE pulsanti scroll */
 function scrollButtonMovie() {
+	// se clicco i bottoni di scroll fermo l'auto scroll
+	clearInterval((stopScroll1));
 	let parentWidth = $(this).parent().width();
 	if (this.className == 'scroll-left scroll') {
 		$(this).parent()[0].scrollLeft -= (parentWidth);
