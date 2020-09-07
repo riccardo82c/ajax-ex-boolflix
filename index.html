@@ -35,9 +35,16 @@
 	<section class="collection">
 		<div id="list">
 			<div id="movie-list">
+				<!-- <button class="scroll-left"><i class="fas fa-chevron-left"></i></button>
+				<button class="scroll-right"><i class="fas fa-chevron-right"></i></button> -->
 			</div>
+
 			<div id="tv-list">
+				<!-- <button class="scroll-left"><i class="fas fa-chevron-left"></i></button>
+				<button class="scroll-right"><i class="fas fa-chevron-right"></i></button> -->
 			</div>
+
+
 		</div>
 	</section>
 
@@ -46,7 +53,7 @@
 	<script id="entry-template" type="text/x-handlebars-template">
 	  <ul class="item" data-id="{{idMovie}}">
 		<div class="poster">
-			<img src="{{{poster}}}" alt="poster image">
+			<img src="{{{poster}}}" alt="{{title}}">
 			<div class="poster-type">{{tipo}}</div>
 		</div>
 		<li class="title"><h2>{{title}}</h2></li>

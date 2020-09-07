@@ -18,30 +18,38 @@ Milestone 2:
 
 	Milestone 3:
 	aggiungere immagini https: //image.tmdb.org/t/p/w342
+
+
+
+	TO DO: 
+	overflow hidden dell'overview ?
+	css per i tasti di scorrimento 
+	scorrimento con la rotella settare dinamicamente la larghezza di ogni immagine
+	
+	filtro per genere a posteriori su HTML
+	
  */
-
-
-
-
 
 $(function () {
 
 	/* MOUSE WHEEL SCROLL */
-	const movie = document.getElementById('movie-list');
-	const tv = document.getElementById('tv-list');
+	// [0] per utilizzare attachEvent per forza ad un elemento JS (non JQUERY)
+	const movie = $('#movie-list')[0];
+	const tv = $('#tv-list')[0];
 
 	scroll(movie);
 	scroll(tv);
 	/* END MOUSE WHEEL SCROLL */
 
+	// focus sull'input
 	$('#input').focus();
 
+	// attivazione input con INVIO o CLICK SU ICONA
 	$('#input').keydown(function (e) {
 		if (e.which == 13 && e.keyCode == 13 && $('#input').val()) {
 			findCollection();
 		}
 	});
-
 	$("#search-btn").click(function () {
 		if ($('#input').val()) {
 			findCollection();
@@ -49,6 +57,8 @@ $(function () {
 		}
 	});
 
+	// bottoni per lo scroll
+	$('#list').on('click', '.scroll', scrollButtonMovie)
 });
 
 
@@ -65,11 +75,12 @@ function findCollection() {
 	ajaxCall(query, 'tv');
 }
 
-
 // resetto il DOM, SALVO valore di input e svuoto input 
 function saveAndReset() {
 	$('#tv-list').empty();
 	$('#movie-list').empty();
+	createScrollButtons('movie');
+	createScrollButtons('tv');
 	let value = $("#input").val();
 	$("#input").val('');
 	return value
@@ -119,7 +130,7 @@ function printCollection(data, type) {
 			vote_average: star(thisItem.vote_average),
 			tipo: checkType(type),
 			poster: checkImage(thisItem.poster_path),
-			overview: thisItem.overview.substring(0, 250) + '...',
+			overview: thisItem.overview.substring(0, 190) + '[...]',
 		}
 		var html = template(hbObj);
 		location.append(html);
@@ -147,10 +158,10 @@ function star(int) {
 	const sE = '<i class="far fa-star"></i>';
 	const sH = '<i class="fas fa-star-half-alt"></i>'
 	// parte decimale
-	let half = int % 1;
+	let dec = int % 1;
 	// numero di stelle piene
 	let round = Math.floor(int / 2);
-	return half >= .5 ? sF.repeat(round) + sH + sE.repeat(4 - (round)) : sF.repeat(round) + sE.repeat(5 - round)
+	return dec >= .5 ? sF.repeat(round) + sH + sE.repeat(4 - (round)) : sF.repeat(round) + sE.repeat(5 - round)
 }
 
 // funzione che ritorna l'immagine se presente sennò ritorna la stringa iniziale
@@ -203,7 +214,7 @@ function ajaxGenre(type, int, idMovie) {
 	});
 }
 
-// passo u intero all'array dei generi e restituisco le stringhe corrispondenti
+// passo un intero all'array dei generi e restituisco attributoto con id == intero passato
 function checkArray(arr, int) {
 	for (let i = 0; i < arr.length; i++) {
 		if (arr[i].id == int) {
@@ -233,7 +244,6 @@ function ajaxAttori(id, tipo) {
 
 // matchin del'id con in nome attore
 function findNameCast(arr, id) {
-
 	if (arr.length > 0) {
 		for (let i = 0; i < 3; i++) {
 			if (arr[i] != undefined) {
@@ -248,7 +258,6 @@ function findNameCast(arr, id) {
 }
 
 
-
 /* *********************** */
 /* SCROLL WITH MOUSE-WHEEL */
 /* *********************** */
@@ -257,7 +266,9 @@ function scroll(section) {
 		function scrollHorizontally(e) {
 			e = window.event || e;
 			var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-			section.scrollLeft -= (delta * 300);
+			// larghezza width = 260px + 10 padding
+			const width = 270;
+			section.scrollLeft -= (delta * width);
 			e.preventDefault();
 		}
 		if (section.addEventListener) {
@@ -273,104 +284,24 @@ function scroll(section) {
 }
 /* *********************** */
 /* *********************** */
-
-
-
-/* *********************** */
-/* chiamata per ricerca attori */
-/* *********************** */
-
-/*  */
-// 1. dopo aver ricercato un film 
-// 2. ne estrapolo results.id per avere l'id del film
-// 3. nel database credits passando l id del film estraggo tutti i suoi attori (già ordinati all'interno per ordine di importanza)
-// 4. acquisisco i primi 5 attori del film con  cast[0].name cast[1].name ... fino a quella che mi serve
-
-
-
-
-/* https://api.themoviedb.org/3/search/movie?api_key=5735ba8aa714f2161c6a9f7f267223ef&language=it-IT&query=matrix */
-
-/* https://api.themoviedb.org/3/movie/603/credits?api_key=5735ba8aa714f2161c6a9f7f267223ef
-
-
-	603 -> id del film matrix
-*/
-
-/* const credit = {
-	"id": 24428,
-	"cast": [{
-			"cast_id": 46,
-			"character": "Tony Stark / Iron Man",
-			"credit_id": "52fe4495c3a368484e02b251",
-			"gender": 2,
-			"id": 3223,
-			"name": "Robert Downey Jr.",
-			"order": 0,
-			"profile_path": "/5qHNjhtjMD4YWH3UP0rm4tKwxCL.jpg"
-		},
-		{
-			"cast_id": 2,
-			"character": "Steve Rogers / Captain America",
-			"credit_id": "52fe4495c3a368484e02b19b",
-			"gender": 2,
-			"id": 16828,
-			"name": "Chris Evans",
-			"order": 1,
-			"profile_path": "/bOH7QqvC9FShVMzWH2wBTtb2iwX.jpg"
-		},
-		{
-			"cast_id": 307,
-			"character": "Bruce Banner / The Hulk",
-			"credit_id": "5e85e8083344c60015411cfa",
-			"gender": 2,
-			"id": 103,
-			"name": "Mark Ruffalo",
-			"order": 2,
-			"profile_path": "/z3dvKqMNDQWk3QLxzumloQVR0pv.jpg"
-		}
-	]
+/* CREAZIONE pulsanti scroll */
+function createScrollButtons(section) {
+	$(`#${section}-list`).append(`<div class="scroll-left scroll">
+	<i class="fas fa-chevron-left"></i>
+	<i class="fas fa-chevron-left"></i>
+	</div>
+	<div class="scroll-right scroll" >
+	<i class="fas fa-chevron-right"></i>
+	<i class="fas fa-chevron-right"></i>
+	</div>`);
 }
 
-
-const movie = [{
-		"popularity": 51.055,
-		"id": 603,
-		"video": false,
-		"vote_count": 17670,
-		"vote_average": 8.1,
-		"title": "The Matrix",
-		"release_date": "1999-03-30",
-		"original_language": "en",
-		"original_title": "The Matrix",
-		"genre_ids": [
-			28,
-			878
-		],
-		"backdrop_path": "/fNG7i7RqMErkcqhohV2a6cV1Ehy.jpg",
-		"adult": false,
-		"overview": "Set in the 22nd century, The Matrix tells the story of a computer hacker who joins a group of underground insurgents fighting the vast and powerful computers who now rule the earth.",
-		"poster_path": "/dXNAPwY7VrqMAo51EKhhCJfaGb5.jpg"
-	},
-	{
-		"popularity": 35.63,
-		"id": 604,
-		"video": false,
-		"vote_count": 7120,
-		"vote_average": 6.9,
-		"title": "The Matrix Reloaded",
-		"release_date": "2003-05-15",
-		"original_language": "en",
-		"original_title": "The Matrix Reloaded",
-		"genre_ids": [
-			12,
-			28,
-			53,
-			878
-		],
-		"backdrop_path": "/sDxCd4nt3eR4qOCW1GoD0RabQtq.jpg",
-		"adult": false,
-		"overview": "Six months after the events depicted in The Matrix, Neo has proved to be a good omen for the free humans, as more and more humans are being freed from the matrix and brought to Zion, the one and only stronghold of the Resistance.  Neo himself has discovered his superpowers including super speed, ability to see the codes of the things inside the matrix and a certain degree of pre-cognition. But a nasty piece of news hits the human resistance: 250,000 machine sentinels are digging to Zion and would reach them in 72 hours. As Zion prepares for the ultimate war, Neo, Morpheus and Trinity are advised by the Oracle to find the Keymaker who would help them reach the Source.  Meanwhile Neo's recurrent dreams depicting Trinity's death have got him worried and as if it was not enough, Agent Smith has somehow escaped deletion, has become more powerful than before and has fixed Neo as his next target.",
-		"poster_path": "/jBegA6V243J6HUnpcOILsRvBnGb.jpg"
+/* FUNZIONE pulsanti scroll */
+function scrollButtonMovie() {
+	let width = $(this).parent().width();
+	if (this.className == 'scroll-left scroll') {
+		$(this).parent()[0].scrollLeft -= (width);
+	} else {
+		$(this).parent()[0].scrollLeft += (width);
 	}
-]; */
+}
