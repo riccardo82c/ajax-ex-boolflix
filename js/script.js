@@ -1,7 +1,7 @@
 /* 
 	TO DO: 
 	
-	1. Filtro per genere a posteriori su HTML
+	1. Pulire il codice 
 	
  */
 
@@ -63,6 +63,12 @@ $(function () {
 	$('#filter-dropdown').on('click', 'li', function () {
 		$(this).parent().slideToggle(400);
 		let selectGenre = $(this).data('genere');
+
+		if (selectGenre != 'all') {
+			$('#filter-btn').text(capitalize(selectGenre));
+		} else {
+			$('#filter-btn').text('Filtra per genere');
+		}
 		let elementiDom = $('.item');
 
 		if (selectGenre === 'all') {
@@ -116,6 +122,7 @@ function findCollection() {
 function saveAndReset() {
 	$('#tv-list').empty();
 	$('#movie-list').empty();
+	$('#filter-btn').text('Filtra per genere');
 	createScrollButtons('movie');
 	createScrollButtons('tv');
 	let value = $("#input").val();
@@ -206,7 +213,7 @@ function printCollection(data, type) {
 
 		/* Chiamata AJAX per ricercare i generi del film corrente */
 		// check del genere -  NO RETURN FUNCTION (AJAX call)
-		// cerco per genere passando: 1 il tipo (differenzio url in cui cercare), 2 l'id del genere (posso averne più di uno), e l'id dell'elemento corrente per appendere il valore nella posizione corretta)
+		// cerco per genere passando: 1 il tipo (differenzio url in cui cercare), 2 l'id del genere (posso averne più di uno), 3 e l'id dell'elemento corrente per appendere il valore nella posizione corretta)
 		let idGeneri = thisItem.genre_ids;
 		idGeneri.forEach(element => {
 			ajaxGenre(type, element, thisItem.id);
@@ -279,9 +286,10 @@ function ajaxGenre(type, int, idMovie) {
 		},
 		success: function (obj) {
 			// appendo la stringa corrispondente al genere nell'item con data-id = "id movie corrente"
-			$(`.item[data-id="${idMovie}"`).find('.genere-span').append(`${checkArray(obj.genres, int)} `);
 
-
+			if (checkArray(obj.genres, int) != 'televisione film') {
+				$(`.item[data-id="${idMovie}"`).find('.genere-span').append(`${checkArray(obj.genres, int)} `);
+			}
 
 		},
 		error: function () {
@@ -295,6 +303,7 @@ function ajaxGenre(type, int, idMovie) {
 function checkArray(arr, int) {
 	for (let i = 0; i < arr.length; i++) {
 		if (arr[i].id == int) {
+			console.log(arr[i].name);
 			return arr[i].name
 		}
 	}
@@ -394,22 +403,19 @@ function capitalize(stringa) {
 	return primoCarattere + stringa.slice(1).toLowerCase();
 };
 
-// cerca tutti i generi presenti nel DOM
+// cerca tutti i generi presenti nel DOM e crea il filter dropdown
 function genreDom() {
 	$('#filter-dropdown').empty();
-
 	let generi = $('.genere-span').text();
 	let parola = generi.split(' ');
-	/* console.log(parola); */
-
 	let oneGeneri = parola.reduce(function (acc, elem) {
 		if (!acc.includes(elem) && elem != '' && elem != undefined && elem != '&' && elem != 'undefined') {
 			acc.push(elem);
 		}
 		return acc
-	}, ['All'])
+	}, ['All']);
 
-	/* console.log(oneGeneri); */
+
 
 	oneGeneri.forEach(element => {
 		$('#filter-dropdown').append(`<li data-genere=${element.toLowerCase()}>${element}</li>`);

@@ -239,11 +239,6 @@ ul.item {
 	font-size: 1em;
 }
 
-/* spaziatura tra li */
-/* .item li {
-	padding-bottom: 3px;
-} */
-
 /* colorazione varie sezioni item */
 .item span,
 .item p {
@@ -371,7 +366,7 @@ span.genere-span {
 /* FINE PROVE HOVER */
 
 
-@media all and (max-width: 768px) {
+@media all and (max-width: 900px) {
 
 	.logo h5 {
 		display: none;
