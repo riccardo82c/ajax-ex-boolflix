@@ -55,29 +55,28 @@ $(function () {
 		/* $('#filter-dropdown').slideToggle(400); */
 	});
 
+
+	$('#filter-dropdown').mouseleave(function () {
+		$(this).slideUp(400);
+	})
+
 	$('#filter-dropdown').on('click', 'li', function () {
-
-
-
-		$(this).parent().slideToggle(150);
+		$(this).parent().slideToggle(400);
 		let selectGenre = $(this).data('genere');
 		let elementiDom = $('.item');
 
 		if (selectGenre === 'all') {
 			elementiDom.show();
 		} else {
-
-
-
-
 			/* console.log(elementiDom); */
 			elementiDom.each(function () {
 				console.log(this);
-				if ($(this).find('.genere-span').text().includes(capitalize(selectGenre))) {
+				if ($(this).find('.genere-span').text().toLowerCase().includes(selectGenre.toLowerCase())) {
 					$(this).show();
 				} else {
 					$(this).hide();
 				}
+				console.log($('.item').length);
 			});
 			console.log($(this).data('genere'));
 		}
@@ -404,7 +403,7 @@ function genreDom() {
 	/* console.log(parola); */
 
 	let oneGeneri = parola.reduce(function (acc, elem) {
-		if (!acc.includes(elem) && elem != '' && elem != undefined) {
+		if (!acc.includes(elem) && elem != '' && elem != undefined && elem != '&' && elem != 'undefined') {
 			acc.push(elem);
 		}
 		return acc
