@@ -18,6 +18,9 @@ $(function () {
 	// focus sull'input
 	$('#input').focus();
 
+	// nascondo il filter button fino al caricamento del DOM
+	$('#filter-btn').hide();
+
 
 	// attivazione input con INVIO o CLICK SU ICONA
 	$('#input').keydown(function (e) {
@@ -48,52 +51,42 @@ $(function () {
 
 
 	// pulsante filter
-	$('#filter-btn').click(function () {
+	$('#filter').on('click', '#filter-btn', function () {
 		console.log('click');
 		genreDom();
-		$(this).next().slideToggle(400);
-		/* $('#filter-dropdown').slideToggle(400); */
+		$(this).next().slideToggle(350);
 	});
 
-
 	$('#filter-dropdown').mouseleave(function () {
-		$(this).slideUp(400);
+		$(this).slideUp(350);
 	})
 
 	$('#filter-dropdown').on('click', 'li', function () {
-		$(this).parent().slideToggle(400);
+		$(this).parent().slideToggle(350);
 		let selectGenre = $(this).data('genere');
-
 		if (selectGenre != 'all') {
 			$('#filter-btn').text(capitalize(selectGenre));
-		} else {
-			$('#filter-btn').text('Filtra per genere');
 		}
 		let elementiDom = $('.item');
-
 		if (selectGenre === 'all') {
+			$('#filter-btn').text('Filtra per genere');
 			elementiDom.show();
 		} else {
 			/* console.log(elementiDom); */
 			elementiDom.each(function () {
-				console.log(this);
 				if ($(this).find('.genere-span').text().toLowerCase().includes(selectGenre.toLowerCase())) {
 					$(this).show();
 				} else {
 					$(this).hide();
 				}
-				console.log($('.item').length);
 			});
-			console.log($(this).data('genere'));
 		}
-
 	});
 
 
 	/* FUNZIONE CHE FA AUTOSCROLL */
 	stopScroll1 = setInterval(() => {
 		$('#movie-list')[0].scrollLeft += (270);
-		console.log('autoscroll R');
 	}, 5000);
 	/* END AUTOSCROLL */
 
@@ -228,6 +221,9 @@ function printCollection(data, type) {
 
 
 	}
+
+	// mostro il pulsante filter
+	$('#filter-btn').show();
 	// setto il placeholder
 	$('#input').attr('placeholder', 'Inserisci titolo');
 
@@ -303,7 +299,6 @@ function ajaxGenre(type, int, idMovie) {
 function checkArray(arr, int) {
 	for (let i = 0; i < arr.length; i++) {
 		if (arr[i].id == int) {
-			console.log(arr[i].name);
 			return arr[i].name
 		}
 	}
@@ -374,10 +369,8 @@ function scroll(section) {
 function createScrollButtons(section) {
 	$(`#${section}-list`).append(`<div class="scroll-left scroll">
 	<i class="fas fa-chevron-left"></i>
-	<i class="fas fa-chevron-left"></i>
 	</div>
 	<div class="scroll-right scroll" >
-	<i class="fas fa-chevron-right"></i>
 	<i class="fas fa-chevron-right"></i>
 	</div>`);
 }
@@ -405,9 +398,13 @@ function capitalize(stringa) {
 
 // cerca tutti i generi presenti nel DOM e crea il filter dropdown
 function genreDom() {
+	// svuoto il predente elenco di generi in dropdown
 	$('#filter-dropdown').empty();
+	// generi = testo contenuto nello span genere-span
 	let generi = $('.genere-span').text();
+	// parola = array di tutte le parole presenti in generi (split con separatore ' ' )
 	let parola = generi.split(' ');
+	// reduce dell'array parola
 	let oneGeneri = parola.reduce(function (acc, elem) {
 		if (!acc.includes(elem) && elem != '' && elem != undefined && elem != '&' && elem != 'undefined') {
 			acc.push(elem);
@@ -415,8 +412,7 @@ function genreDom() {
 		return acc
 	}, ['All']);
 
-
-
+	// in oneGeneri ho tutti i generi presenti nel DOM senza doppioni preceduti da All, per ogni elemento creu un <li> nel dropdown con data-genere='parola[i]'
 	oneGeneri.forEach(element => {
 		$('#filter-dropdown').append(`<li data-genere=${element.toLowerCase()}>${element}</li>`);
 	});
