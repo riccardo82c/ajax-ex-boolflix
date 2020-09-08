@@ -47,6 +47,20 @@ $(function () {
 	createScrollButtons('movie');
 
 
+	// pulsante filter
+	$('#filter-btn').click(function () {
+		console.log('click');
+		$(this).next().slideToggle(400);
+		/* $('#filter-dropdown').slideToggle(400); */
+	});
+
+	$('#filter-dropdown li').click(function () {
+		console.log('click li');
+		$(this).parent().slideToggle(150);
+
+	});
+
+
 
 	/* FUNZIONE CHE FA AUTOSCROLL */
 	stopScroll1 = setInterval(() => {
