@@ -50,16 +50,39 @@ $(function () {
 	// pulsante filter
 	$('#filter-btn').click(function () {
 		console.log('click');
+		genreDom();
 		$(this).next().slideToggle(400);
 		/* $('#filter-dropdown').slideToggle(400); */
 	});
 
-	$('#filter-dropdown li').click(function () {
-		console.log('click li');
+	$('#filter-dropdown').on('click', 'li', function () {
+
+
+
 		$(this).parent().slideToggle(150);
+		let selectGenre = $(this).data('genere');
+		let elementiDom = $('.item');
+
+		if (selectGenre === 'all') {
+			elementiDom.show();
+		} else {
+
+
+
+
+			/* console.log(elementiDom); */
+			elementiDom.each(function () {
+				console.log(this);
+				if ($(this).find('.genere-span').text().includes(capitalize(selectGenre))) {
+					$(this).show();
+				} else {
+					$(this).hide();
+				}
+			});
+			console.log($(this).data('genere'));
+		}
 
 	});
-
 
 
 	/* FUNZIONE CHE FA AUTOSCROLL */
@@ -194,9 +217,14 @@ function printCollection(data, type) {
 		let idItem = thisItem.id;
 		ajaxAttori(idItem, type);
 
-		// setto il placeholder
-		$('#input').attr('placeholder', 'Inserisci titolo');
+
+
+
+
 	}
+	// setto il placeholder
+	$('#input').attr('placeholder', 'Inserisci titolo');
+
 }
 
 // funzione per convertire il numero in stelle
@@ -252,11 +280,14 @@ function ajaxGenre(type, int, idMovie) {
 		},
 		success: function (obj) {
 			// appendo la stringa corrispondente al genere nell'item con data-id = "id movie corrente"
-			$(`.item[data-id="${idMovie}"`).find('.genere').append(`${checkArray(obj.genres, int)} `);
+			$(`.item[data-id="${idMovie}"`).find('.genere-span').append(`${checkArray(obj.genres, int)} `);
+
+
+
 		},
 		error: function () {
 			console.log('non presente id ' + idMovie);
-			$(`.item[data-id="${idMovie}"`).find('.genere').append(`...`);
+			$(`.item[data-id="${idMovie}"`).find('.genere-span').append(`...`);
 		}
 	});
 }
@@ -353,4 +384,35 @@ function scrollButtonMovie() {
 	} else {
 		$(this).parent()[0].scrollLeft += (parentWidth);
 	}
+}
+/* END pulsanti scroll */
+/* *********************** */
+/* *********************** */
+
+// capitalize di una stringa
+function capitalize(stringa) {
+	var primoCarattere = stringa.charAt(0).toUpperCase();
+	return primoCarattere + stringa.slice(1).toLowerCase();
+};
+
+// cerca tutti i generi presenti nel DOM
+function genreDom() {
+	$('#filter-dropdown').empty();
+
+	let generi = $('.genere-span').text();
+	let parola = generi.split(' ');
+	/* console.log(parola); */
+
+	let oneGeneri = parola.reduce(function (acc, elem) {
+		if (!acc.includes(elem) && elem != '' && elem != undefined) {
+			acc.push(elem);
+		}
+		return acc
+	}, ['All'])
+
+	/* console.log(oneGeneri); */
+
+	oneGeneri.forEach(element => {
+		$('#filter-dropdown').append(`<li data-genere=${element.toLowerCase()}>${element}</li>`);
+	});
 }
